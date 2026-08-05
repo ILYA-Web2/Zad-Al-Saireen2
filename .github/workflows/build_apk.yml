@@ -1,0 +1,67 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # Real, stable release signing — embedded directly per explicit
+      # instruction (private repository). `tr -d '\r\n '` strips any
+      # stray whitespace/newlines the base64 text picked up from mobile
+      # copy-paste, which was the actual cause of the earlier
+      # "Invalid lenByte" corruption.
+      - name: Set up release signing
+        run: |
+          cat > /tmp/keystore_base64.txt <<'B64EOF'
+          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
+          B64EOF
+          cat /tmp/keystore_base64.txt | tr -d '\r\n ' | base64 -d > android/release.jks
+          cat > android/key.properties <<EOF
+          storeFile=release.jks
+          storePassword=AAFR58SzUZCX8VhZb548WSvuAmR1ZEodzUn349zZyM
+          keyAlias=ILYA
+          keyPassword=AAFR58SzUZCX8VhZb548WSvuAmR1ZEodzUn349zZyM
+          EOF
+
+      # Fails fast with a real, specific reason (wrong password, wrong
+      # alias, or a corrupted file) instead of letting Gradle hit it deep
+      # inside packaging with just "Failed to read key ***: null".
+      - name: Verify release keystore is readable
+        run: |
+          echo "Keystore file size: $(wc -c < android/release.jks) bytes"
+          keytool -list -v \
+            -keystore android/release.jks \
+            -storepass "AAFR58SzUZCX8VhZb548WSvuAmR1ZEodzUn349zZyM" \
+            -alias "ILYA" \
+            | head -5
+
+      - name: Build APK
+        run: >
+          flutter build apk --release --android-skip-build-dependency-validation
+          --dart-define=TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          --dart-define=TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zad-alsaereen-app
+          path: build/app/outputs/flutter-apk/app-release.apk

@@ -1,0 +1,17 @@
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+*.log
+
+# Real release-signing secrets — must never be committed. See the note
+# in android/app/build.gradle for how these get created/wired via CI.
+android/key.properties
+*.jks
+*.keystore
+
+# تجاهل الملفات الثقيلة مؤقتاً لنجاح الرفع من الهاتف
+lib/features/duas/audio/
+lib/features/duas/pdf/
